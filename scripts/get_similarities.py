@@ -21,7 +21,7 @@ def get_pair_similarities(name, dataset):
     model, set_id, layer = name.split("/")
     data = dataset[:]
     
-    cor_mat = np.corrcoef(data, rowvar=True)
+    cor_mat = np.corrcoef(data, rowvar=False)
 
     lower_indices = np.tril_indices(n=cor_mat.shape[0], k=-1)    
     for i, j in zip(lower_indices[0], lower_indices[1]):
