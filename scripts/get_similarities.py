@@ -19,7 +19,7 @@ def process(name, obj):
 
 def get_pair_similarities(name, dataset):
     model, set_id, layer = name.split("/")
-    data = dataset.value
+    data = dataset[:]
     
     cor_mat = np.corrcoef(data, rowvar=True)
 
