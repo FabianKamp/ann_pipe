@@ -5,25 +5,24 @@ import numpy as np
 import pandas as pd
 
 results = []
+data = {}
+
+def aggregate_data(name, item):
+    if isinstance(item, h5py.Dataset):
+        img_id, layer = name.split("/")
+        print("\tProcessing ", img_id, layer)
+        
+        assert len(features.shape) == 2, "Feature shape is not 2d"
+        features = item[0,:] # only first replicate
+        
+        if layer not in data.keys(): 
+            data.update({layer: [features]})
+        else: 
+            data[layer].append(features) 
 
 def get_pair_similarities(model_name, group):
     data = {}
-    prev_id = 0
-    for name, item in group.visititems():    
-        if isinstance(item, h5py.Dataset):
-            img_id, layer = name.split("/")
-            print("\tProcessing ", img_id, layer)
-            
-            assert int(img_id)>=prev_id, "Image order false"
-            prev_id = int(img_id)
-
-            assert len(features.shape) == 2, "Feature shape is not 2d"
-            features = item[0,:] # only first replicate
-            
-            if layer not in data.keys(): 
-                data.update({layer: [features]})
-            else: 
-                data[layer].append(features)    
+    group.visititems(aggregate_data)   
     
     for layer, features in data.items():
         features = np.vstack(features)
