@@ -1,0 +1,21 @@
+#!/bin/bash
+#SBATCH --job-name=run_extract_activations
+#SBATCH --time=10:00:00
+#SBATCH --mem=64GB
+#SBATCH --cpus-per-task=8
+#SBATCH --partition gpu
+#SBATCH --gres=gpu:1
+#SBATCH --chdir /home/mpib/kamp/ann_pipe
+#SBATCH --output=./logs/run_extract_activations-%j.out
+#SBATCH --error=./logs/run_extract_activations-%j.err
+#SBATCH --mail-type=END,FAIL
+#SBATCH --mail-user=kamp@mpib-berlin.mpg.de
+
+source .venv/bin/activate
+
+python ./runners/run_extract_activations.py \
+    --stimuli_root ./stimuli/exp_stimuli_pilot \
+    --folders $(ls -d ./stimuli/exp_stimuli_pilot/*/ | xargs -n 1 basename) \
+    --output_dir ./output \
+    --output_prefix $(date +%y%m%d) \
+    --models ResNet50 VGG19 CORNet-S VGG19 ViT-B-16 DeiT-Base 
