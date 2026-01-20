@@ -6,7 +6,7 @@ from typing import List
 
 
 def get_image_set(image_folder: str) -> List[str]:
-    """Return sorted image base names (without extension) for .png/.jpg files."""
+    """Return sorted image base names (without extension) for .png files."""
     if not os.path.isdir(image_folder):
         raise FileNotFoundError(f"Image folder not found: {image_folder}")
-    return sorted(os.path.splitext(f)[0] for f in os.listdir(image_folder) if f.lower().endswith((".png", ".jpg")))
+    return sorted(os.path.splitext(f)[0] for f in os.listdir(image_folder) if f.lower().endswith(".png"))
