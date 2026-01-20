@@ -18,4 +18,4 @@ python ./runners/run_extract_activations.py \
     --folders $(ls -d ./stimuli/exp_stimuli_pilot/*/ | xargs -n 1 basename) \
     --output_dir ./output \
     --output_prefix $(date +%y%m%d) \
-    --models ResNet50 VGG19 CORNet-S VGG19 ViT-B-16 DeiT-Base 
+    --models VGG19 CORNet-S ResNet50 ViT-B-16 DeiT-Base 
