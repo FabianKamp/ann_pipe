@@ -10,8 +10,8 @@ import os
 from PIL import Image
 from scipy.stats import pearsonr
 from tqdm import tqdm
-from . import WM_RSA as WM
-from . import memfMRI_funcs as memf
+# from . import WM_RSA as WM
+# from . import memfMRI_funcs as memf
 from scipy.spatial.distance import pdist, squareform
 import random
 import matplotlib.pyplot as plt
