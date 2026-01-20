@@ -12,6 +12,9 @@ with h5py.File(args.file, 'r') as f:
     print("Top-level items:", list(f.keys()))
 
     def print_groups(name, obj):
+        indent = "  " * name.count('/')
         if isinstance(obj, h5py.Group):
-            print(f"Group: {name}")
+            print(f"{indent}Group: {name}")
+        elif isinstance(obj, h5py.Dataset):
+            print(f"{indent}Dataset: {name} - shape: {obj.shape}, dtype: {obj.dtype}")
     f.visititems(print_groups)   
