@@ -2,6 +2,7 @@ import h5py
 import argparse 
 import os 
 import numpy as np
+import pandas as pd
 
 results = []
 
@@ -33,14 +34,18 @@ def get_pair_similarities(name, dataset):
             "correlation": cor_mat[i, j]
         })
 
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Recursively check all groups within h5 file')
     parser.add_argument('--file', type=str, required=True, help='Path to the h5 file')
+    parser.add_argument('--output', type=str, default="./output", help='output path')
     args = parser.parse_args()
 
     assert os.path.isfile(args.file), f"{args.file} not found. Check if path is correct."
-
     with h5py.File(args.file, 'r') as f:
         print("Top-level items:", list(f.keys()))
         f.visititems(process)
+    
+    assert os.path.isdir(args.output), f"{args.output} is not a directory."
+    results = pd.DataFrame(results)
+    filepath = os.path.join(args.output, "similarities.csv")
+    results.to_csv(filepath, index=False)
