@@ -12,7 +12,7 @@ def aggregate_data(name, item):
         img_id, layer = name.split("/")
         print("\tProcessing ", img_id, layer)
         
-        assert len(features.shape) == 2, "Feature shape is not 2d"
+        assert len(item.shape) == 2, "Feature shape is not 2d"
         features = item[0,:] # only first replicate
         
         if layer not in data.keys(): 
