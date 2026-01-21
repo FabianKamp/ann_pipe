@@ -12,7 +12,7 @@ def aggregate_data(name, item, data):
         print("\tLoading ", img_id, layer)
         
         assert type(img_id)==str, "Image ID is not string"
-        set_id = img_id[1:]
+        set_id = int(img_id[1:])
         
         data.setdefault("set_id", set_id)
         assert data["set_id"] == set_id, "Set ID not congruent. Check h5py file."
@@ -35,7 +35,7 @@ def get_corrs(features):
         corrs.append({
             "img_a": i,
             "img_b": j,
-            "correlation": cor_mat[i, j]
+            "correlation": np.round(cor_mat[i, j],3)
         })
     return corrs
 
@@ -72,7 +72,16 @@ if __name__ == "__main__":
             print(f"Processing Group: {model_name}")                
             get_pair_similarities(model_name, item)
 
-    assert os.path.isdir(args.output), f"{args.output} is not a directory."
     results = pd.DataFrame(results)
+    results = results[[
+        "set_id", 
+        "model",
+        "layer",
+        "img_a",
+        "img_b",
+        "correlation"
+    ]] 
+
+    assert os.path.isdir(args.output), f"{args.output} is not a directory."
     filepath = os.path.join(args.output, "similarities.csv")
     results.to_csv(filepath, index=False)
