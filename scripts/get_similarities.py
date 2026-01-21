@@ -63,7 +63,6 @@ if __name__ == "__main__":
             print(f"Processing Group: {model_name}")                
             get_pair_similarities(model_name, item)
 
-    
     assert os.path.isdir(args.output), f"{args.output} is not a directory."
     results = pd.DataFrame(results)
     filepath = os.path.join(args.output, "similarities.csv")
