@@ -11,6 +11,12 @@ def aggregate_data(name, item, data):
         img_id, layer = name.split("/")
         print("\tLoading ", img_id, layer)
         
+        assert type(img_id)==str, "Image ID is not string"
+        set_id = img_id[1:]
+        
+        data.setdefault("set_id", set_id)
+        assert data["set_id"] == set_id, "Set ID not congruent. Check h5py file."
+
         assert len(item.shape) == 2, "Feature shape is not 2d"
         features = item[0,:] # only first replicate
         
@@ -36,13 +42,16 @@ def get_corrs(features):
 def get_pair_similarities(model_name, group):
     data = {}
     group.visititems(lambda name, item: aggregate_data(name, item, data))   
-    assert len(data)>0, "No data found."
     
-    for layer, features in data.items():
+    assert len(data)>0, "No data found."
+    set_id = data.pop("set_id")
+    
+    for layer, features in data.items():       
         features = np.vstack(features)
         corrs = get_corrs(features)
         for pair_dict in corrs: 
             pair_dict.update(
+                set_id = set_id, 
                 model = model_name, 
                 layer = layer
             ) 
