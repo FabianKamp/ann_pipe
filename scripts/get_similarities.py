@@ -90,5 +90,5 @@ if __name__ == "__main__":
     results.sort_values(by=("model", "layer", "set_id", "img_a", "img_b"), inplace=True)
 
     assert os.path.isdir(args.output), f"{args.output} is not a directory."
-    filepath = os.path.join(args.output, "similarities.csv")
+    filepath = os.path.join(args.output, f"{args.prefix}_similarities.csv")
     results.to_csv(filepath, index=False)
