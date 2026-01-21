@@ -62,7 +62,7 @@ def process_h5(filepath):
     
     with h5py.File(filepath, 'r') as f:
         for model_name, item in f.items():
-            tqdm.write(f"\tModel: {model_name}")                
+            # tqdm.write(f"\tModel: {model_name}")                
             get_pair_similarities(model_name, item)
 
 if __name__ == "__main__":
@@ -71,7 +71,7 @@ if __name__ == "__main__":
     parser.add_argument('--output', type=str, default="./output", help='output path')
     args = parser.parse_args()
 
-    h5files = [os.path.join("./output", file) for file in os.listdir("./output") 
+    h5files = [os.path.join("./output", file) for file in sorted(os.listdir("./output"))
                 if file.startswith(args.prefix) and file.endswith(".h5")]
     assert len(h5files)>0, "No files found in ./output."
 
