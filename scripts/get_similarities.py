@@ -3,13 +3,13 @@ import argparse
 import os 
 import numpy as np
 import pandas as pd
+from tqdm import tqdm
 
 results = []
 
 def aggregate_data(name, item, data):
     if isinstance(item, h5py.Dataset):
         img_id, layer = name.split("/")
-        print("\tLoading ", img_id, layer)
         
         assert type(img_id)==str, "Image ID is not string"
         set_id = int(img_id[1:])
@@ -57,20 +57,26 @@ def get_pair_similarities(model_name, group):
             ) 
             results.append(pair_dict)
 
+def process_h5(filepath): 
+    assert filepath, f"{filepath} not found. Check if path is correct."
+    
+    with h5py.File(filepath, 'r') as f:
+        for model_name, item in f.items():
+            tqdm.write(f"\tModel: {model_name}")                
+            get_pair_similarities(model_name, item)
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Recursively check all groups within h5 file')
-    parser.add_argument('--file', type=str, required=True, help='Path to the h5 file')
+    parser.add_argument('--prefix', type=str, required=True, help='Prefix of h5py files to process')
     parser.add_argument('--output', type=str, default="./output", help='output path')
     args = parser.parse_args()
 
-    assert os.path.isfile(args.file), f"{args.file} not found. Check if path is correct."
-    with h5py.File(args.file, 'r') as f:
-        print("Top-level items:", list(f.keys()))
-        
-        for model_name, item in f.items():
-            print("=" * 80)
-            print(f"Processing Group: {model_name}")                
-            get_pair_similarities(model_name, item)
+    h5files = [os.path.join("./output", file) for file in os.listdir("./output") 
+                if file.startswith(args.prefix) and file.endswith(".h5py")]
+    
+    for filepath in tqdm(h5files):
+        tqdm.write(f"Processing: {os.path.basename(filepath)}")
+        process_h5(filepath)
 
     results = pd.DataFrame(results)
     results = results[[
@@ -81,6 +87,7 @@ if __name__ == "__main__":
         "img_b",
         "correlation"
     ]] 
+    results.sort_values(by=("model", "layer", "set_id", "img_a", "img_b"), inplace=True)
 
     assert os.path.isdir(args.output), f"{args.output} is not a directory."
     filepath = os.path.join(args.output, "similarities.csv")
