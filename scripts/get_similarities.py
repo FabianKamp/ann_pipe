@@ -73,7 +73,8 @@ if __name__ == "__main__":
 
     h5files = [os.path.join("./output", file) for file in os.listdir("./output") 
                 if file.startswith(args.prefix) and file.endswith(".h5py")]
-    
+    assert len(h5files)>0, "No files found in ./output."
+
     for filepath in tqdm(h5files):
         tqdm.write(f"Processing: {os.path.basename(filepath)}")
         process_h5(filepath)
