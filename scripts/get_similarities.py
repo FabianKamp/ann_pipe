@@ -80,6 +80,7 @@ if __name__ == "__main__":
         process_h5(filepath)
 
     results = pd.DataFrame(results)
+    results.sort_values(by=["model", "layer", "set_id", "img_a", "img_b"], inplace=True)
     results = results[[
         "set_id", 
         "model",
@@ -88,7 +89,6 @@ if __name__ == "__main__":
         "img_b",
         "correlation"
     ]] 
-    results.sort_values(by=("model", "layer", "set_id", "img_a", "img_b"), inplace=True)
 
     assert os.path.isdir(args.output), f"{args.output} is not a directory."
     filepath = os.path.join(args.output, f"{args.prefix}_similarities.csv")
