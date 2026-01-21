@@ -71,6 +71,9 @@ if __name__ == "__main__":
     parser.add_argument('--output', type=str, default="./output", help='output path')
     args = parser.parse_args()
 
+    print(os.listdir("./output"))
+    print(type(args.prefix))
+
     h5files = [os.path.join("./output", file) for file in os.listdir("./output") 
                 if file.startswith(args.prefix) and file.endswith(".h5py")]
     assert len(h5files)>0, "No files found in ./output."
