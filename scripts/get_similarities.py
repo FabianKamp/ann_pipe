@@ -9,7 +9,7 @@ results = []
 def aggregate_data(name, item, data):
     if isinstance(item, h5py.Dataset):
         img_id, layer = name.split("/")
-        print("\tProcessing ", img_id, layer)
+        print("\tLoading ", img_id, layer)
         
         assert len(item.shape) == 2, "Feature shape is not 2d"
         features = item[0,:] # only first replicate
@@ -21,7 +21,7 @@ def aggregate_data(name, item, data):
 
 def get_corrs(features):  
     cor_mat = np.corrcoef(features, rowvar=True)
-    assert cor_mat.shape == (4,4), f"Corrmat does not have the shape 4x4."
+    assert cor_mat.shape == (5,5), f"Corrmat does not have the shape 4x4. Shape {cor_mat.shape}"
 
     indices = np.tril_indices(n=cor_mat.shape[0], k=-1)  
     corrs = []  
