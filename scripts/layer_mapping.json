@@ -1,0 +1,40 @@
+{
+  "CORNet-S": {
+    "V1": 1,
+    "V2": 2,
+    "V4": 3, 
+    "IT": 4
+  },
+
+  "VGG19": {
+    "maxpool1": 1,   
+    "maxpool2": 2,     
+    "maxpool3": 3,     
+    "maxpool4": 4,     
+    "maxpool5": 5
+  },     
+
+  "ViT-B-16": {
+    "transformer.blocks.0.pwff.fc2": 1,
+    "transformer.blocks.1.pwff.fc2": 2,
+    "transformer.blocks.2.pwff.fc2": 3,
+    "transformer.blocks.3.pwff.fc2": 4,
+    "transformer.blocks.6.pwff.fc2": 5
+  },
+
+  "ResNet50": {
+    "layer1.2.conv2": 1,
+    "layer2.3.conv2": 2,
+    "layer3.5.conv2": 3,
+    "layer4.1.conv2": 4,
+    "layer4.2.conv2": 5
+  },
+
+  "DeiT-Base": {
+    "blocks.2.mlp.fc2":  1,
+    "blocks.5.mlp.fc2":  2,
+    "blocks.8.mlp.fc2":  3,
+    "blocks.10.mlp.fc2": 4,
+    "blocks.11.mlp.fc2": 5
+  }
+}

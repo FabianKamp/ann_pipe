@@ -2,6 +2,7 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
+import json
 import os
 import numpy as np
 os.chdir("/Users/kamp/PhD/ann_pipe")
@@ -23,9 +24,6 @@ condition_map = {
 }
 data["condition"] = data["img_pair_id"].map(condition_map)
 data.head()
-
-# %% add layer depth
-print(data.layer.unique())
 
 # %% minimize mean diff 
 def minimize_mean_diff(a, b, num_to_exclude):
@@ -75,31 +73,63 @@ set_ids = select_ids(cornet)
 print("Excluded stimuli: ", sorted(set(cornet.set_id) - set(set_ids)))
 print("Included stimuli: ", sorted(set(cornet.set_id)))
 
-# %% plot cornet
-def plot_pair_similarities(data, model_name, layer_order=None):
+# %% plot
+def plot_pair_similarities(data, model_name, ax=None):
+
+    with open("./scripts/layer_mapping.json", "r") as f: 
+        layer_mapping = json.load(f)
+
     temp = data.loc[data.model==model_name]
     assert len(temp)>0, f"{model_name} not found in dataframe."
+    assert model_name in layer_mapping, f"{model_name} not in layer_mapping."
 
+    layer_dict = layer_mapping[model_name]
+    layer_order = sorted(layer_dict, key=lambda k: layer_dict[k])
+    nlayers = len(layer_order)
+    
     temp = temp.loc[temp.condition!="control"]
     temp = temp.loc[temp.set_id.isin(set_ids)]
-    temp = temp.sort_values(by="layer")
+    temp = temp.loc[temp.layer.isin(layer_dict)]
 
-    plt.figure()
-    ax = sns.boxplot(
+    if ax is None:
+        fig, ax = plt.subplots()
+    
+    sns.boxplot(
         data=temp, 
         x="layer",
         order = layer_order,
         y="correlation", 
         hue="condition", 
-        hue_order=["visual","semantic","random"]
+        hue_order=["visual","semantic","random"],
+        ax = ax
     )
 
-    ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
     ax.set_yticks(np.arange(.1,1.1,.1))
+    ax.set_xticks(np.arange(nlayers), labels=np.arange(nlayers)+1)
     ax.set_xlabel("")
     ax.grid(alpha=.5)
     ax.set_title(model_name.upper())
 
-plot_pair_similarities(data, "CORNet-S", ["V1", "V2", "V4", "IT"])
-plot_pair_similarities(data, "VGG19")
-# %% plot VGG19
+    ax.legend().set_visible(False)
+        
+
+models = [
+    "CORNet-S", 
+    "VGG19",
+    "ViT-B-16",
+    "ResNet50", 
+    "DeiT-Base",
+]
+nmodels = len(models)
+
+fig, axes = plt.subplots(2,3, figsize=(16,8), sharey=True)
+faxes = axes.flatten()
+for i in range(nmodels):
+    print(models[i])
+    plot_pair_similarities(data, models[i], faxes[i])
+
+fig.delaxes(faxes[-1])
+
+# %% load json file
+
+# %%
