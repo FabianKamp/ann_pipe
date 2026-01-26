@@ -3,6 +3,7 @@ import argparse
 import os 
 import numpy as np
 import pandas as pd
+from scipy.spatial.distance import pdist
 from tqdm import tqdm
 
 results = []
@@ -27,7 +28,13 @@ def aggregate_data(name, item, data):
 
 def get_corrs(features):  
     cor_mat = np.corrcoef(features, rowvar=True)
-    assert cor_mat.shape == (5,5), f"Corrmat does not have the shape 4x4. Shape {cor_mat.shape}"
+    
+    cosine_dist_mat = pdist(features, metric="cosine")
+    pearson_dist_mat = pdist(features, metric="pearson")
+
+    assert cor_mat.shape == (5,5), f"Corrmat does not have the shape 5x5. Shape {cor_mat.shape}"
+    assert cosine_dist_mat.shape == (5,5), f"Cosine dist mat does not have the shape 5x5. Shape {cosine_dist_mat.shape}"
+    assert pearson_dist_mat.shape == (5,5), f"Pearson dist mat does not have the shape 5x5. Shape {pearson_dist_mat.shape}"
 
     indices = np.tril_indices(n=cor_mat.shape[0], k=-1)  
     corrs = []  
@@ -35,7 +42,9 @@ def get_corrs(features):
         corrs.append({
             "img_a": i,
             "img_b": j,
-            "correlation": np.round(cor_mat[i, j],3)
+            "correlation": np.round(cor_mat[i, j],3),
+            "cosine_distance": np.round(cosine_dist_mat[i, j],3),
+            "pearson_distance": np.round(pearson_dist_mat[i, j],3)
         })
     return corrs
 
@@ -87,7 +96,9 @@ if __name__ == "__main__":
         "layer",
         "img_a",
         "img_b",
-        "correlation"
+        "correlation", 
+        "cosine_distance", 
+        "pearson_distance"
     ]] 
 
     assert os.path.isdir(args.output), f"{args.output} is not a directory."
