@@ -8,7 +8,7 @@ import numpy as np
 os.chdir("/Users/kamp/PhD/ann_pipe")
 
 # %% loading - map conditions
-data = pd.read_csv("./output/260120_similarities.csv")
+data = pd.read_csv("./output/260120_similarities_2.csv")
 
 # only comparison to sample is relevant
 assert (data["img_a"] > 0).all(), "Image A should never be 0 in data (i.e. the target image)"
@@ -74,7 +74,7 @@ print("Excluded stimuli: ", sorted(set(cornet.set_id) - set(set_ids)))
 print("Included stimuli: ", sorted(set(cornet.set_id)))
 
 # %% plot
-def plot_pair_similarities(data, model_name, ax=None):
+def plot_pair_similarities(data, model_name, metric, ax=None):
 
     with open("./scripts/layer_mapping.json", "r") as f: 
         layer_mapping = json.load(f)
@@ -82,6 +82,7 @@ def plot_pair_similarities(data, model_name, ax=None):
     temp = data.loc[data.model==model_name]
     assert len(temp)>0, f"{model_name} not found in dataframe."
     assert model_name in layer_mapping, f"{model_name} not in layer_mapping."
+    assert metric in temp.columns, f"Metric has to be in data columns. {metric} not found."
 
     layer_dict = layer_mapping[model_name]
     layer_order = sorted(layer_dict, key=lambda k: layer_dict[k])
@@ -98,7 +99,7 @@ def plot_pair_similarities(data, model_name, ax=None):
         data=temp, 
         x="layer",
         order = layer_order,
-        y="correlation", 
+        y=metric, 
         hue="condition", 
         hue_order=["visual","semantic","random"],
         ax = ax
@@ -116,19 +117,17 @@ def plot_pair_similarities(data, model_name, ax=None):
 models = [
     "CORNet-S", 
     "VGG19",
-    "ViT-B-16",
-    "ResNet50", 
-    "DeiT-Base",
+    "ResNet50" 
 ]
 nmodels = len(models)
 
-fig, axes = plt.subplots(2,3, figsize=(16,8), sharey=True)
+fig, axes = plt.subplots(1,3, figsize=(12,4), sharey=True)
 faxes = axes.flatten()
 for i in range(nmodels):
     print(models[i])
-    plot_pair_similarities(data, models[i], faxes[i])
+    plot_pair_similarities(data, model_name=models[i], metric="cosine_distance", ax=faxes[i])
 
-fig.delaxes(faxes[-1])
+
 
 # %% load json file
 
