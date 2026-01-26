@@ -3,7 +3,7 @@ import argparse
 import os 
 import numpy as np
 import pandas as pd
-from scipy.spatial.distance import pdist
+from scipy.spatial.distance import pdist, squareform
 from tqdm import tqdm
 
 results = []
@@ -27,10 +27,10 @@ def aggregate_data(name, item, data):
             data[layer].append(features) 
 
 def get_corrs(features):  
-    cor_mat = np.corrcoef(features, rowvar=True)
     
-    cosine_dist_mat = pdist(features, metric="cosine")
-    pearson_dist_mat = pdist(features, metric="correlation")
+    cor_mat = np.corrcoef(features, rowvar=True)
+    cosine_dist_mat = squareform(pdist(features, metric="cosine"))
+    pearson_dist_mat = squareform(pdist(features, metric="correlation"))
 
     assert cor_mat.shape == (5,5), f"Corrmat does not have the shape 5x5. Shape {cor_mat.shape}"
     assert cosine_dist_mat.shape == (5,5), f"Cosine dist mat does not have the shape 5x5. Shape {cosine_dist_mat.shape}"
