@@ -30,7 +30,7 @@ def get_corrs(features):
     cor_mat = np.corrcoef(features, rowvar=True)
     
     cosine_dist_mat = pdist(features, metric="cosine")
-    pearson_dist_mat = pdist(features, metric="pearson")
+    pearson_dist_mat = pdist(features, metric="correlation")
 
     assert cor_mat.shape == (5,5), f"Corrmat does not have the shape 5x5. Shape {cor_mat.shape}"
     assert cosine_dist_mat.shape == (5,5), f"Cosine dist mat does not have the shape 5x5. Shape {cosine_dist_mat.shape}"
