@@ -5,6 +5,7 @@ import seaborn as sns
 import json
 import os
 import numpy as np
+from scipy import stats
 os.chdir("/Users/kamp/PhD/ann_pipe")
 
 # %% loading - map conditions
@@ -130,5 +131,47 @@ for i in range(nmodels):
 
 
 # %% load json file
+
+def ttest_pair_similarities(data, model_name, metric):
+
+    with open("./scripts/layer_mapping.json", "r") as f: 
+        layer_mapping = json.load(f)
+
+    temp = data.loc[data.model==model_name]
+    assert len(temp)>0, f"{model_name} not found in dataframe."
+    assert model_name in layer_mapping, f"{model_name} not in layer_mapping."
+    assert metric in temp.columns, f"Metric has to be in data columns. {metric} not found."
+
+    layer_dict = layer_mapping[model_name]    
+    temp = temp.loc[temp.set_id.isin(set_ids)]
+    temp = temp.loc[temp.layer.isin(layer_dict)]
+    temp = temp.sort_values(by="set_id")
+
+    print("\nModel", "Layer", "LayerDepth", "Condition", "Statistic", "pValue", sep="\t"*2)
+    for layer, group in temp.groupby("layer"):
+        group = group.sort_values(by="set_id")
+        visual = group.loc[group.condition=="visual"]
+        semantic = group.loc[group.condition=="semantic"]
+        random = group.loc[group.condition=="random"]
+    
+        visual_vs_random = stats.ttest_rel(visual[metric], random[metric])
+        visual_vs_random = np.round(visual_vs_random,3)
+        
+        semantic_vs_random = stats.ttest_rel(semantic[metric], random[metric])
+        semantic_vs_random = np.round(semantic_vs_random,3)
+
+        print(model_name, layer, layer_dict[layer], "Visual vs Rand", visual_vs_random[0], visual_vs_random[1], sep="\t"*2)
+        print(model_name, layer, layer_dict[layer], "Semant vs Rand", semantic_vs_random[0], semantic_vs_random[1], sep="\t"*2)
+
+
+models = [
+    "CORNet-S", 
+    "VGG19",
+    "ResNet50" 
+]
+nmodels = len(models)
+
+for i in range(nmodels):
+    ttest_pair_similarities(data, model_name=models[i], metric="cosine_distance")
 
 # %%
