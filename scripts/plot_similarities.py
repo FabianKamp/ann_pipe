@@ -114,7 +114,7 @@ def plot_pair_similarities(data, model_name, metric, ax=None):
 
     ax.legend().set_visible(False)
         
-
+metric = "correlation"
 models = [
     "CORNet-S", 
     "VGG19",
@@ -126,12 +126,11 @@ fig, axes = plt.subplots(1,3, figsize=(12,4), sharey=True)
 faxes = axes.flatten()
 for i in range(nmodels):
     print(models[i])
-    plot_pair_similarities(data, model_name=models[i], metric="cosine_distance", ax=faxes[i])
+    plot_pair_similarities(data, model_name=models[i], metric=metric, ax=faxes[i])
 
 
 
 # %% load json file
-
 def ttest_pair_similarities(data, model_name, metric):
 
     with open("./scripts/layer_mapping.json", "r") as f: 
@@ -163,7 +162,7 @@ def ttest_pair_similarities(data, model_name, metric):
         print(model_name, layer, layer_dict[layer], "Visual vs Rand", visual_vs_random[0], visual_vs_random[1], sep="\t"*2)
         print(model_name, layer, layer_dict[layer], "Semant vs Rand", semantic_vs_random[0], semantic_vs_random[1], sep="\t"*2)
 
-
+metric = "correlation"
 models = [
     "CORNet-S", 
     "VGG19",
@@ -172,6 +171,6 @@ models = [
 nmodels = len(models)
 
 for i in range(nmodels):
-    ttest_pair_similarities(data, model_name=models[i], metric="cosine_distance")
+    ttest_pair_similarities(data, model_name=models[i], metric=metric)
 
 # %%
